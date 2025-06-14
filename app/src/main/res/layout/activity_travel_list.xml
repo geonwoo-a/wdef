@@ -94,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:scaleType="fitCenter"
-            android:contentDescription="추가가기 버튼"
+            android:contentDescription="추가하기 버튼"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp"

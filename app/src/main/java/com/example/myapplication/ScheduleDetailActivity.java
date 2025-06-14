@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ public class ScheduleDetailActivity extends AppCompatActivity {
     private RecyclerView recyclerViewSchedule;
     private ScheduleAdapter adapter;
     private List<String> scheduleList;
+    private ImageButton btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,8 @@ public class ScheduleDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_schedule_detail);
 
         recyclerViewSchedule = findViewById(R.id.recyclerViewSchedule);
+        btnBack = findViewById(R.id.btnBack);
+
         recyclerViewSchedule.setLayoutManager(new LinearLayoutManager(this));
 
         scheduleList = new ArrayList<>();
@@ -44,6 +48,8 @@ public class ScheduleDetailActivity extends AppCompatActivity {
         });
 
         recyclerViewSchedule.setAdapter(adapter);
+
+        btnBack.setOnClickListener(v -> finish());
     }
 
     private void showEditDialog(int position) {
