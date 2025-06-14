@@ -6,7 +6,7 @@ public class FlightItem {
     private String arrivalTime;
     private long price;
 
-    public FlightItem(String airline, String departureTime, String arrivalTime, int price) {
+    public FlightItem(String airline, String departureTime, String arrivalTime, long price) {
         this.airline = airline;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;

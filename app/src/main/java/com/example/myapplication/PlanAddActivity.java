@@ -29,7 +29,6 @@ public class PlanAddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_plan);
 
-        // UI 요소 초기화
         etDeparture = findViewById(R.id.etDeparture);
         etDestination = findViewById(R.id.etDestination);
         etDepartureDate = findViewById(R.id.etDepartureDate);
@@ -39,26 +38,21 @@ public class PlanAddActivity extends AppCompatActivity {
         flightResults = findViewById(R.id.FlightResults);
         btnBack = findViewById(R.id.btnBack);
 
-        // flightList 초기화 및 adapter 설정
         flightList = new ArrayList<>();
         flightAdapter = new FlightAdapter(flightList);
 
         recyclerFlights.setLayoutManager(new LinearLayoutManager(this));
         recyclerFlights.setAdapter(flightAdapter);
 
-        // 뒤로가기 버튼 클릭 시 Activity 종료
         btnBack.setOnClickListener(v -> finish());
 
-        // 항공편 검색 버튼 클릭 시
         btnSearchFlights.setOnClickListener(v -> {
-            // 임시 예시 데이터 추가 (실제 API 연동 시 수정 필요)
             flightList.clear();
 
             String departure = etDeparture.getText().toString().trim();
             String destination = etDestination.getText().toString().trim();
             String departDate = etDepartureDate.getText().toString().trim();
 
-            // 예시 데이터 추가
             flightList.add(new FlightItem("대한항공", departDate + " 10:00", departDate + " 14:00", 250000));
             flightList.add(new FlightItem("아시아나", departDate + " 15:00", departDate + " 19:00", 230000));
 

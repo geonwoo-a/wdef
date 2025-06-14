@@ -49,15 +49,6 @@
             android:textSize="35sp"
             android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/btnEditDelete"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="수정/삭제 버튼"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/q2" />
     </LinearLayout>
 
     <LinearLayout
@@ -74,6 +65,8 @@
             android:id="@+id/editTextFlight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:textSize="16dp"
             android:hint="항공권 비용"
             android:inputType="number" />
 
@@ -81,6 +74,8 @@
             android:id="@+id/editTextAccommodation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:textSize="16dp"
             android:hint="숙박 비용"
             android:inputType="number" />
 
@@ -88,6 +83,8 @@
             android:id="@+id/editTextFood"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:textSize="16dp"
             android:hint="식비"
             android:inputType="number" />
 
@@ -95,6 +92,8 @@
             android:id="@+id/editTextTransport"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:textSize="16dp"
             android:hint="교통비"
             android:inputType="number" />
 
@@ -102,6 +101,8 @@
             android:id="@+id/editTextEtc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:textSize="16dp"
             android:hint="기타"
             android:inputType="number" />
     </LinearLayout>

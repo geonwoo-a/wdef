@@ -33,7 +33,7 @@ public class TravelListAdapter extends RecyclerView.Adapter<TravelListAdapter.Vi
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewTitle = itemView.findViewById(R.id.textViewTitle);
+            textViewTitle = itemView.findViewById(R.id.textTitle);
 
             itemView.setOnClickListener(v -> {
                 int pos = getAdapterPosition();

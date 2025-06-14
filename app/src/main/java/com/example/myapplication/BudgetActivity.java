@@ -13,39 +13,27 @@ public class BudgetActivity extends AppCompatActivity {
 
     private EditText editTextFlight, editTextAccommodation, editTextFood, editTextTransport, editTextEtc;
     private TextView textTotalBudget;
-    private ImageButton btnBack, btnEditDelete;
+    private ImageButton btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_budget);
 
-        // 뷰 초기화
         editTextFlight = findViewById(R.id.editTextFlight);
         editTextAccommodation = findViewById(R.id.editTextAccommodation);
         editTextFood = findViewById(R.id.editTextFood);
         editTextTransport = findViewById(R.id.editTextTransport);
         editTextEtc = findViewById(R.id.editTextEtc);
         textTotalBudget = findViewById(R.id.textTotalBudget);
-
         btnBack = findViewById(R.id.btnBack);
-        btnEditDelete = findViewById(R.id.btnEditDelete);
 
         btnBack.setOnClickListener(v -> finish());
 
-        // 수정/삭제 버튼 클릭 처리 (필요하면 구현)
-        btnEditDelete.setOnClickListener(v -> {
-            // TODO: 예산 수정/삭제 기능 구현 예정
-        });
-
-        // 입력 값 변화 감지 리스너 등록
         TextWatcher budgetTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-            @Override
-            public void afterTextChanged(Editable s) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override public void afterTextChanged(Editable s) {
                 updateTotalBudget();
             }
         };

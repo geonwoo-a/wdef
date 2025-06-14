@@ -3,32 +3,36 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TravelListActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_ADD_TRAVEL = 1;
+    private static final int REQUEST_CODE_EDIT_TRAVEL = 2;
+
     private RecyclerView recyclerView;
     private TravelListAdapter adapter;
-    private List<TravelItem> travelItems; // 전체 목록
-    private List<TravelItem> filteredItems; // 필터 적용된 목록
-
+    private List<TravelItem> travelItems;
+    private List<TravelItem> filteredItems;
     private Spinner spinnerCountryFilter;
     private Spinner spinnerPeriodFilter;
 
     private ImageButton btnAddTravel;
     private ImageButton btnBack;
-    private ImageButton btnEditDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +44,7 @@ public class TravelListActivity extends AppCompatActivity {
         spinnerPeriodFilter = findViewById(R.id.spinnerPeriodFilter);
         btnAddTravel = findViewById(R.id.btnAddTravel);
         btnBack = findViewById(R.id.btnBack);
-        btnEditDelete = findViewById(R.id.btnEditDelete);
 
-        // 스피너 어댑터 세팅
         String[] countries = {"전체", "대한민국", "일본", "미국", "프랑스"};
         ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, countries);
         countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -53,7 +55,6 @@ public class TravelListActivity extends AppCompatActivity {
         periodAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPeriodFilter.setAdapter(periodAdapter);
 
-        // 예시 여행 데이터 초기화
         travelItems = new ArrayList<>();
         travelItems.add(new TravelItem("제주 여행", "대한민국", "2025-07-01", "2025-07-05"));
         travelItems.add(new TravelItem("도쿄 여행", "일본", "2025-08-10", "2025-08-15"));
@@ -67,16 +68,30 @@ public class TravelListActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        btnEditDelete.setOnClickListener(v -> {
-            // TODO: 여행 수정/삭제 기능 구현 예정
-        });
-
         btnAddTravel.setOnClickListener(v -> {
             Intent intent = new Intent(TravelListActivity.this, PlanAddActivity.class);
             startActivityForResult(intent, REQUEST_CODE_ADD_TRAVEL);
         });
 
-        // 스피너 선택 리스너 (필터 적용)
+        adapter.setOnItemClickListener(new TravelListAdapter.OnItemClickListener() {
+            @Override
+            public void onEditClick(int position) {
+                TravelItem item = filteredItems.get(position);
+                Intent intent = new Intent(TravelListActivity.this, PlanAddActivity.class);
+                intent.putExtra("travelItem", item);
+                intent.putExtra("position", position);
+                startActivityForResult(intent, REQUEST_CODE_EDIT_TRAVEL);
+            }
+
+            @Override
+            public void onDeleteClick(int position) {
+                TravelItem itemToRemove = filteredItems.get(position);
+                travelItems.remove(itemToRemove);
+                filteredItems.remove(position);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
         AdapterView.OnItemSelectedListener filterListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -132,21 +147,142 @@ public class TravelListActivity extends AppCompatActivity {
             String[] endParts = endDate.split("-");
 
             java.util.Calendar startCal = java.util.Calendar.getInstance();
-            startCal.set(Integer.parseInt(startParts[0]), Integer.parseInt(startParts[1]) - 1, Integer.parseInt(startParts[2]), 0,0,0);
+            startCal.set(Integer.parseInt(startParts[0]), Integer.parseInt(startParts[1]) - 1, Integer.parseInt(startParts[2]), 0, 0, 0);
             startCal.set(java.util.Calendar.MILLISECOND, 0);
 
             java.util.Calendar endCal = java.util.Calendar.getInstance();
-            endCal.set(Integer.parseInt(endParts[0]), Integer.parseInt(endParts[1]) - 1, Integer.parseInt(endParts[2]), 0,0,0);
+            endCal.set(Integer.parseInt(endParts[0]), Integer.parseInt(endParts[1]) - 1, Integer.parseInt(endParts[2]), 0, 0, 0);
             endCal.set(java.util.Calendar.MILLISECOND, 0);
 
             long diffMillis = endCal.getTimeInMillis() - startCal.getTimeInMillis();
-            if(diffMillis < 0) return 0; // 종료일이 시작일 이전인 경우 0 처리
+            if (diffMillis < 0) return 0;
 
-            return (int) (diffMillis / (24 * 60 * 60 * 1000)) + 1; // 날짜 포함 일수 계산
+            return (int) (diffMillis / (24 * 60 * 60 * 1000)) + 1;
 
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && data != null) {
+            TravelItem updatedItem = (TravelItem) data.getSerializableExtra("travelItem");
+            int position = data.getIntExtra("position", -1);
+
+            if (requestCode == REQUEST_CODE_ADD_TRAVEL) {
+                travelItems.add(updatedItem);
+                filterList();
+            } else if (requestCode == REQUEST_CODE_EDIT_TRAVEL && position != -1) {
+                TravelItem originalItem = filteredItems.get(position);
+                int originalIndex = travelItems.indexOf(originalItem);
+                if (originalIndex != -1) {
+                    travelItems.set(originalIndex, updatedItem);
+                    filterList();
+                }
+            }
+        }
+    }
+
+    public static class TravelItem implements Serializable {
+        private String title;
+        private String country;
+        private String startDate;
+        private String endDate;
+
+        public TravelItem(String title, String country, String startDate, String endDate) {
+            this.title = title;
+            this.country = country;
+            this.startDate = startDate;
+            this.endDate = endDate;
+        }
+
+        public String getTitle() { return title; }
+        public String getCountry() { return country; }
+        public String getStartDate() { return startDate; }
+        public String getEndDate() { return endDate; }
+
+        public void setTitle(String title) { this.title = title; }
+        public void setCountry(String country) { this.country = country; }
+        public void setStartDate(String startDate) { this.startDate = startDate; }
+        public void setEndDate(String endDate) { this.endDate = endDate; }
+    }
+
+    public static class TravelListAdapter extends RecyclerView.Adapter<TravelListAdapter.ViewHolder> {
+
+        private List<TravelItem> travelItems;
+        private OnItemClickListener listener;
+
+        public interface OnItemClickListener {
+            void onEditClick(int position);
+            void onDeleteClick(int position);
+        }
+
+        public void setOnItemClickListener(OnItemClickListener listener) {
+            this.listener = listener;
+        }
+
+        public TravelListAdapter(List<TravelItem> travelItems) {
+            this.travelItems = travelItems;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = View.inflate(parent.getContext(), R.layout.item_travel, null);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            TravelItem item = travelItems.get(position);
+            holder.bind(item);
+        }
+
+        @Override
+        public int getItemCount() {
+            return travelItems.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            TextView textTitle, textCountry, textPeriod;
+            Spinner spinnerCountryFilter, spinnerPeriodFilter;
+            ImageButton btnEdit, btnDelete;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                textTitle = itemView.findViewById(R.id.Title);
+                spinnerCountryFilter = itemView.findViewById(R.id.spinnerCountryFilter);
+                spinnerPeriodFilter = itemView.findViewById(R.id.spinnerPeriodFilter);
+                btnEdit = itemView.findViewById(R.id.btnBack);
+                btnDelete = itemView.findViewById(R.id.btnEditDelete);
+
+                btnEdit.setOnClickListener(v -> {
+                    if (listener != null) {
+                        int pos = getAdapterPosition();
+                        if (pos != RecyclerView.NO_POSITION) {
+                            listener.onEditClick(pos);
+                        }
+                    }
+                });
+
+                btnDelete.setOnClickListener(v -> {
+                    if (listener != null) {
+                        int pos = getAdapterPosition();
+                        if (pos != RecyclerView.NO_POSITION) {
+                            listener.onDeleteClick(pos);
+                        }
+                    }
+                });
+            }
+
+            void bind(TravelItem item) {
+                textTitle.setText(item.getTitle());
+                textCountry.setText(item.getCountry());
+                textPeriod.setText(item.getStartDate() + " ~ " + item.getEndDate());
+            }
         }
     }
 }
